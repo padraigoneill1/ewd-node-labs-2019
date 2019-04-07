@@ -1,0 +1,26 @@
+{
+  "name": "demo-app",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:8080",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bootstrap": "^3.3.6",
+    "lodash": "^2.4.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.1.0"
+  },
+  "devDependencies": {
+    "@storybook/react": "^3.4.11",
+    "babel-core": "^6.26.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -s ./public -p 9001 -c .storybook"
+  }
+}
