@@ -14,6 +14,6 @@ module.exports = {
     },
     "rules": {
     },
-    "plugins": ["react"
+    "plugins": ["react"]
     
 };

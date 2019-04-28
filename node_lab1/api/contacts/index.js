@@ -1,51 +1,55 @@
 import express from 'express';
-import {contacts} from './contacts';
+import Contact from './contactModel';
+import asyncHandler from 'express-async-handler';
 
-const router = express.Router();
+const router = express.Router(); // eslint-disable-line
 
-router.get('/', (req, res) => {
-  res.send({ contacts: contacts });
+
+// Get all contacts, using try/catch to handle errors
+router.get('/', async (req, res) => {
+  try {
+    const contacts = await Contact.find();
+    res.status(200).json(contacts);
+  } catch (error) {
+    handleError(res, error.message);
+  }
 });
 
-router.post('/', (req, res) => {
-        let newContact = req.body;
-        if (newContact){
-          contacts.push({name: newContact.name, address : newContact.address, phone_number: newContact.phone_number }) ;
-          res.status(201).send({message: "Contact Created"});
-      }else{
-            res.status(400).send({message: "Unable to find Contact in request. No Contact Found in body"});
-      }
-});
+// Create a contact, using async handler
+router.post('/', asyncHandler(async (req, res) => {
+  const contact = await Contact.create(req.body);
+  res.status(201).json(contact);
+}));
 
 // Update a contact
-router.put('/:id', (req, res) => {
-  const key = req.params.id;
-  const updateContact = req.body;
-  const index = contacts.map((contact)=>{
-return contact.phone_number;
-}).indexOf(key);
-         if (index !== -1) {
-            contacts.splice(index, 1, {name: updateContact.name, address: updateContact.address,
-            phone_number: updateContact.phone_number});
-            res.status(200).send({message: 'Contact Updated'});
-           } else {
-       res.status(400).send({message: 'Unable to find Contact in request. No Contact Found in body'});
-   }
-});
+router.put('/:id', asyncHandler(async (req, res) => {
+  if (req.body._id) delete req.body._id;
+  const contact = await Contact.update({
+    _id: req.params.id,
+  }, req.body, {
+    upsert: false,
+  });
+  if (!contact) return res.sendStatus(404);
+  return res.json(200, contact);
+}));
 
 // Delete a contact
-router.delete('/:id', (req, res) => {
-  const key = req.params.id;
-  const index = contacts.map((contact)=>{
-return contact.phone_number;
-}).indexOf(key);
- if (index > -1) {
-contacts.splice(index, 1);
-     res.status(200).send({message: `Deleted contact with phone_number: ${key}.`});
- } else {
-   res.status(400).send({message: `Unable to find contact with phone_number: ${key}.`});
-   }
-});
+router.delete('/:id', asyncHandler(async (req, res) => {
+  const contact = await Contact.findById(req.params.id);
+  if (!contact) return res.send(404);
+  await contact.remove();
+  return res.status(204).send(contact);
+}));
 
+
+/**
+ * Handle general errors.
+ * @param {object} res The response object
+ * @param {object} err The error object.
+ * @return {object} The response object
+ */
+function handleError(res, err) {
+  return res.send(500, err);
+};
 
 export default router;
