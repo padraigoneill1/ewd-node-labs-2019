@@ -6,6 +6,12 @@ import postsRouter from './api/posts';
 import mongoose from 'mongoose';
 import loadContacts from './contactsData';
 import loadPosts from './postsData';
+import loadUsers from './userData';
+
+import './db';
+import usersRouter from './api/users';
+import session from 'express-session';
+import authenticate from './authenticate';
 
 dotenv.config();
 
@@ -18,16 +24,28 @@ mongoose.connect(process.env.mongoDB);
 if (process.env.seedDb) {
   loadContacts();
   loadPosts();
+  loadUsers();
 }
+
+//session middleware
+app.use(session({
+  secret: 'ilikecake',
+  resave: true,
+  saveUninitialized: true
+}));
 
 // configure body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
 app.use('/api/contacts', contactsRouter);
-app.use('/api/posts', postsRouter);
+app.use('/api/posts', authenticate, postsRouter);
+//User router
+app.use('/api/users', usersRouter);
 
-app.use(express.static('public'));
+// app.use(express.static('public'));
+
+
 
 // add middleware to handle any errors.
 // app.use((err, req, res, next) => {
