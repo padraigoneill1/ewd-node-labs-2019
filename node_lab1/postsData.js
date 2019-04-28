@@ -33,14 +33,12 @@ const posts = [
             upvotes: 2,
           },
       ];
-export const loadPosts = () => {
-postModel.find({}).remove(function() {
-    postModel.collection.insert(posts, (err, docs)=>{
-    if (err) {
-      console.log(`failed to Load Post Data`);
-    } else {
-      console.info(`${posts.length} posts were successfully stored.`);
-    }
-  });
-});
+      export default async function loadPosts() {
+    try {
+        await postModel.deleteMany();
+        await postModel.collection.insertMany(posts);
+        console.info(`${posts.length} posts were successfully stored.`);
+      } catch (err) {
+        console.error(`failed to Load posts: ${err}`);
+      }
 };

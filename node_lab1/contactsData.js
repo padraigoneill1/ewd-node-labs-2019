@@ -32,14 +32,12 @@ const contacts = [
   },
 ];
 
-export const loadContacts = () => {
-  contactModel.find({}).remove(() => {
-    contactModel.collection.insert(contacts, (err, docs)=>{
-    if (err) {
-      console.log(`failed to Load Contact Data: ${err}`);
-    } else {
-      console.info(`${contacts.length} contacts were successfully stored.`);
-    }
-  });
-});
-};
+export default async function loadContacts() {
+  try {
+    await contactModel.deleteMany();
+    await contactModel.collection.insertMany(contacts);
+    console.info(`${contacts.length} contacts were successfully stored.`);
+  } catch (err) { 
+    console.error(`failed to Load Contact Data: ${err}`);
+  }
+}

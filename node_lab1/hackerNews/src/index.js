@@ -4,6 +4,7 @@ import React from 'react';
     import '../node_modules/bootstrap/dist/css/bootstrap.css';
     import HackerApp from './App';
     import CommentPage from './components/commentsPage';
+    import LoginView from './loginPage';
 
     const Router = (props) => {
         return (
@@ -18,6 +19,7 @@ import React from 'react';
                 </div>
                 <Switch>
                     <Route path='/posts/:post_id' component={ CommentPage } />
+                    <Route path="/login" component={LoginView} />
                     <Route exact path='/' component={ HackerApp } />
                     <Redirect from='*' to='/' />
                 </Switch>
